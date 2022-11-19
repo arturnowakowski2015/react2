@@ -1,0 +1,751 @@
+<html>
+<script src='https://unpkg.com/react@16.3.1/umd/react.production.min.js'></script>
+    <script src='https://unpkg.com/react-dom@16.3.1/umd/react-dom.production.min.js'></script>
+    <script src='https://unpkg.com/react-router-dom@5.0.0/umd/react-router-dom.min.js'></script>
+    <script src='https://unpkg.com/babel-standalone@6.26.0/babel.js'></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.1.js" integrity="sha256-3zlB5s2uwoUzrXK3BT7AX3FyvojsraNFxCc2vC/7pNI=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.min.js" integrity="sha384-IDwe1+LCz02ROU9k972gdyvl+AESN10+x7tBKgc9I5HFtuNz0wWnPclzo6p9vxnk" crossorigin="anonymous"></script>
+   
+    <body> 
+ 
+
+    <div id="app">
+
+    </div>
+    <script type="text/babel">
+  
+let recits = 
+[{"operation":"adding","items":[{"name":"Use hooks!","id":0.6775456512483691,"isActive":false,"display":"block"}],"id":0,"indexnow":0},
+{"operation":"editing","items":[{"name":"XXXXXXXX","id":0.6775456512483691,"isActive":false,"display":"block"}],"id":0,"indexnow":0}];
+
+let index=0;
+
+const { PureComponent, useState, useEffect, } = React;
+      const Link = ReactRouterDOM.Link,
+            Route = ReactRouterDOM.Route;
+            
+
+            function App(props) { 
+                const [view, setView] = useState(0);
+                const [i, setI] = useState(null)
+                let link=0;
+                function gotoLink(i){
+                    return i;
+                }
+                return (
+                    <div>
+<div>
+
+
+
+</div>
+
+
+                        <ReactRouterDOM.HashRouter> 
+
+
+
+                            <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+  <div class="carousel-inner">
+    <div class="carousel-item active">wwwww
+      <img class="d-block w-100" src="..." alt="First slide" />
+    </div>
+    <div class="carousel-item">xxxxx
+      <img class="d-block w-100" src="..." alt="Second slide" />
+    </div>
+    <div class="carousel-item">aaaa
+      <img class="d-block w-100" src="..." alt="Third slide" />
+    </div>
+  </div>
+  <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    <span class="sr-only">Previous</span>
+  </a>
+  <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    <span class="sr-only">Next</span>
+  </a>
+</div>
+
+
+                        <div class="container">
+            
+                            <nav>
+                            <Link class="a1" onClick={() => setView(1)} to="/">TODO</Link>
+                            <Link class="a2"  onClick={() => setView(2)} to="/a">scroll</Link>
+                            <Link class="a3"  onClick={() => setView(3)} to="/b">tree</Link> 
+
+                            <div class="X1">todo</div>
+                                <div class="X2">scroll</div>
+                            <div class="X3">tree</div>   
+                            </nav>
+
+                        </div>  
+                        <div class="view">  ....  <Route path={"/a/"+i} component={() => <B /> } /> .....      
+                            {  
+
+
+                                view==1 ? ( <Route exact path="/" component={() => <Home recits={props.recits} />} /> )
+                                        : view==2 ?
+                                         
+                                        <Route path="/a" component={() => <A  gotoLink={(i) => {setI(i);setView(4); gotoLink(i)}} /> } >
+                                          
+                                       
+                                      </Route>
+                                        : view==3 ?
+                                        <Route path="/b" component={B} />                                     
+                                            : null
+                            }
+                        </div>
+
+                        </ReactRouterDOM.HashRouter>    
+                    
+
+                    </div>
+                );
+                }
+
+
+                $('.carousel').carousel({
+  interval: 2000
+})
+
+            const Home = props => {     
+                const [strd, setStrd] = useState(props.recits.map((t, i) => (
+                                                <option  value={i}>{t.operation}</option>
+                                          ))); 
+                const [index, setIndex] = useState(0);
+                const [todos, setTodos] = useState(props.recits);
+                const add = (str) => {
+                    let ra = Math.random();
+
+                    let item = {"operation":"adding","items":[{"name":str+"QQQQQQQQQQ","id":ra,"isActive":false,"display":"block"}],"id":todos.length-1,"indexnow":0}
+                    let r = todos[index].items.slice();
+ 
+                    r.forEach((el) => {
+                        item.items.push(el)
+                    })
+
+                    todos.push(item)
+  
+                    todos.forEach((recit, i) => {recit.id=i; recit.indexnow= todos.length-1;}); 
+                    setIndex(todos[0].indexnow);
+                    setStrd(todos.map((t, i) => (
+                                                    <option  value={i}>{t.operation}</option>
+                                            ))); 
+                              
+                }
+                const changeRecits = (id) =>{
+                    setIndex(id);
+                }
+
+                const deleteTask = (id, indexnow) => {
+                    let r = null; 
+                     r = recits[indexnow].items.filter((task) => {  return id !== task.id});
+  
+                    const newTask =  {"operation":"delete","items":r, "id":recits.length-1,"indexnow":recits.length-1} 
+ 
+ 
+                    todos.push(newTask);
+
+                    todos.forEach((recit, i) => {recit.id=i; recit.indexnow= todos.length-1;});  
+                    setIndex(todos[0].indexnow);
+                    setStrd(todos.map((t, i) => (
+                                                <option  value={i}>{t.operation}</option>
+                                          ))); 
+                }
+
+                function editTask(id,indexnow, str){  
+                        let ra = Math.random();
+
+                        let item = {"operation":"ccccc","items":[{"name":str,"id":ra,"isActive":false,"display":"block"}],"id":0,"indexnow":0}
+ 
+                        let r = todos[index].items.slice();
+ 
+                        r.forEach((el) => { 
+                            if(el.id!==id)
+                                    item.items.push(el)
+                        })
+ 
+                        todos.push(item)
+ 
+                        setStrd(todos.map((t, i) => (
+                                                <option  value={i}>{t.operation}</option>
+                                          ))); 
+                        todos.forEach((recit, i) => {recit.id=i; recit.indexnow= todos.length-1;}); 
+                        setIndex(todos[0].indexnow);
+ 
+                    }   
+                const changeind = () => {
+ 
+                    setIndex(todos.length-1);
+ 
+                }
+
+                return ( 
+                    <div>    
+                            <Add todos={todos} index={index} changeind={changeind} add={add} />
+                            <Select  
+                                    changeRecits={changeRecits} 
+                                    strd={strd } />
+                                    { todos[index].items.map((task, i) => { return ( 
+                                    <S
+                                                id={task.id}
+                                                name={task.name} 
+                                                indexnow={recits[0].indexnow}
+                                                index={index}
+                                                key={task.id} 
+                                                editTask={editTask}
+                                                deleteTask={deleteTask}
+                                                changeind={changeind}
+                                              
+                                            />
+                                    )
+                                })    
+                            }
+                    </div>
+                );            
+            }
+
+
+
+            const Add = (props) => {
+                const [editfield, setEditfield] = useState("");
+                const change = () => setEditfield(event.target.value);
+
+                const add = (editfield) => {
+                    props.add(editfield);
+                }
+                return (<div>
+                            <input type="text" value={editfield} onChange={() => change()} />
+                            <button onClick={() => props.index!==props.todos.length-1 ? (props.changeind(), alert("try now") ) : props.add(editfield)}>add</button>
+                        </div>)
+            }
+
+ 
+            function Select (props){
+                    const[vstr, setVstr]=useState("ddd")
+                    const [strd, setStrd] = useState(props.strd);
+                    useEffect(() => {
+                        setStrd(props.strd)
+                    }, [props.strd]); 
+                 return (<div> 
+                            <select  onChange={e => { setVstr(event.target.value );props.changeRecits(e.target.value);}} value={vstr}>
+                                {strd }
+                            </select> 
+                        </div>)
+                }
+   
+
+            const S = (props) =>  { 
+                const [str, setStr] = useState(1)
+                const [editfield, setEditfield] = useState(props.name)
+                const [isActive, setIsActive] = useState(props.isActive);
+                const [todos, setTodos] = useState(recits)
+
+                
+                function deleteTask(id, indexnow) {
+                        props.deleteTask(id, indexnow)
+                    }
+                 
+                const changeind = () => {
+                    props.changeind();
+                }
+ 
+
+                const setB = (id, indexnow,  s ) =>{
+ 
+                                            const newTask =  {"operation":"ch Color","items":[{"name":"name"+s,"id":Math.random(),"isActive":s,"display":"block"}],
+                                                             "id":recits.length,"indexnow":indexnow} 
+                                            setTodos([...todos, newTask]); 
+                                            recits=todos;
+
+                        }
+                function edit(id,indexnow,editfield){
+                         props.editTask(id, indexnow, editfield)
+ 
+                }
+
+        return (
+            <div>{
+                str==1 ? (
+                    <div className="c-cb">
+                        <label className="todo-label"         style={{
+                                                                    backgroundColor: isActive ? 'salmon' : '',
+                                                                    color: isActive ? 'white' : '',
+                                                                    }}>
+                            {props.name}
+                        </label>
+                        <button onClick={() => props.index!==todos.length-1 ? (props.changeind(), alert("try now") ) : setStr(2)}>edit</button>
+                        <button onClick={() =>   {setIsActive(!isActive); setB(props.id, props.indexnow, isActive)}}>change color</button>
+                        <button onClick={() => props.index!==todos.length-1 ? (props.changeind(), alert("try now") ) :  deleteTask(props.id, props.indexnow)}>delete</button>
+                    </div>
+                )
+                : str==2 ?
+                (
+                    <div className="c-cb">
+                        <input id={props.id} type="text" value={editfield}  onChange={() => setEditfield(event.target.value)}  />
+
+                        <button onClick={() =>  { edit(props.id, props.indexnow,editfield); setStr(1)} }>confirm</button>
+                    </div>
+                )
+                :null
+                }
+        
+            </div>
+        );
+}
+
+
+
+
+
+
+                class A extends React.Component {
+                    constructor(props) {
+                        super(props);
+                        this.state = {
+                            data: [],
+                            columns:[ ],
+                            strd:[],
+                            flagsettings:false,
+                            postPerPage:10,
+                            dff:-1,
+                            urls:[
+                                "https://jsonplaceholder.typicode.com/posts",
+                                "https://jsonplaceholder.typicode.com/comments",
+                                "https://jsonplaceholder.typicode.com/albums",
+                                "https://jsonplaceholder.typicode.com/photos" ,
+                                "https://jsonplaceholder.typicode.com/todos" ,
+                                "https://jsonplaceholder.typicode.com/users"
+                            ],
+                            i: 0
+                        };
+                    }
+                    furl(){ 
+                        fetch(this.state.urls[this.state.i])
+                        .then((response) => response.json())
+                        .then((response) => {
+                            // set the state
+                            console.log(response);
+                            this.setState({ data: response });
+                            this.setState({ columns: Object.keys(this.state.data[0]).map((t) => {
+                                                     let d={col:{name:"", disp:true}};
+                                                     d.col.name=null;
+                                                     return d;
+                            })}) 
+                        });
+ 
+                    }
+                    changeRecits(e) {   
+                        this.setState({i: e}) 
+                        this.furl();
+                    } 
+                    changeCol(fs, cols){
+                      this.setState({flagSettings : !fs, 
+                                     columns: cols });
+
+                    }
+                    componentDidMount() {
+                        this.furl();
+                        this.setState({strd: this.state.urls.map((t, i) => (
+                                                <option  value={i}>{t.slice(t.lastIndexOf("/"))}</option>
+                                          )),
+                                       
+                        });
+                      
+
+                    };    
+                    checkedCol(index){ 
+                        this.setState({columns: this.state.columns.map((t, i) => {
+                            index==i ? t.col.disp = !t.col.disp : t;
+                        return t })
+                        })
+                    }
+                    changePPP(value){
+                        this.setState({postPerPage: value})
+
+                    }
+                    df(i){
+                        alert("przed  "+this.state.dff)
+                        this.setState({dff:i})
+                        alert(this.state.dff)
+                    }
+                    deleteRec(i){
+                        alert(this.state.data.length)
+                        this.setState({data: this.state.data.filter((t) =>  (t.id)!=i), dff:i})
+                        alert("po   "+this.state.data.length)
+                    }
+                    render(){
+                        return (
+                            <div class="row" > 
+                                <div class="col-xs-12 col-md-6">
+                                    <div id="container" >
+                                        {
+                                             
+                                            this.state.flagSettings // Logs output to dev tools console.)
+                                            ?
+                                             <Settings data={this.state.data} columns={this.state.columns} changePPP={this.changePPP.bind(this)} 
+                                                       checkedCol={this.checkedCol.bind(this)} />
+                                            :
+                                            <Select  changeRecits={this.changeRecits.bind(this)} strd={this.state.strd } />
+                                        }
+                                        
+                                        <Route path="/a" component={() => <Table data={this.state.data} columns={this.state.columns}
+                                               flagSettings={this.state.flagSettings} postPerPage={this.state.postPerPage} 
+                                               changeCol={this.changeCol.bind(this)}  
+                                               link={this.props.link} df={() => {this.df.bind(this)}} dff={this.state.dff} 
+                                               deleteRec={ this.deleteRec.bind(this)} gotoLink={(i) => this.props.gotoLink(i)} /> } />
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                        }
+                }
+                const Settings = props =>{
+                    const[ postPerPage, setPostPerPage]=useState(props.postPerPage)
+                    return (
+                        <div>
+                        {
+                        props.columns.map((t, i) => { 
+                            return  <CheckboxInput label={t.col.name} name={t.col.name} checked={t.col.disp} value={i} checkedCol={() => props.checkedCol(event.target.value)}/>
+                        })
+                    }
+ 
+                        <input type="range" id="cowbell" name="cowbell"  min="1" max="100" value={postPerPage} step="1"
+                               onChange={() => {setPostPerPage(event.target.value); props.changePPP(postPerPage)}} />
+                        <label for="cowbell">Cowbell</label>
+ 
+                    </div>
+                    )
+                }
+
+                const CheckboxInput  = props => {
+                    const [checked, setChecked] = useState(props.checked)
+                    return (
+                                <label>
+                                    <input type="checkbox"
+                                    name={props.name}
+                                    checked={checked}           
+                                    onClick={() => {setChecked(!checked); props.checkedCol(props.value)}}         
+                                    value={props.value} />
+                                    {props.label}
+                                 </label>
+                            );
+                }
+
+                const Table = (props, columns) => {
+                    const [sort, setSort] = useState(true)
+                    const [view, setView] = useState(1)
+                    const [id, setId ] = useState(0);
+                    const [number, setNumber] = useState(1); // No of pages
+                    const [element, setElement] = useState(3)
+
+                    const [postPerPage, setPostPerPage] = useState(props.postPerPage);
+                    useEffect(() => {
+                        setPostPerPage(props.postPerPage)
+                    }, [props.postPerPage]); 
+                    useEffect(() => {
+ 
+                   
+                        if(window.location.href.slice(window.location.href.indexOf("#")+1)==url)
+                        setElement(1)
+                        else setElement(2);
+                    }, [df]); 
+ 
+                    const {data} = props;
+                    let ttt=0;
+              
+                    const arr = [];
+                    const lastPost = number * postPerPage;
+                    const firstPost = lastPost - postPerPage;
+                    const currentPost = data.slice(firstPost, lastPost);
+                    const pageNumber = [];
+                    let cell = {col:{name:"", disp:true}};
+                    let col=[cell];                 
+                    for (let i = 1; i <= Math.ceil(data.length / postPerPage); i++) {
+                        pageNumber.push(i);
+                    }
+
+                    const buildHeader = (header, columns) => {
+ 
+                        data.map((t, i) => {let ii = 0; for(let f of Object.values(t)  )
+                                                                          {if(typeof f == "object")arr.push(ii);ii++}
+                                                                        })
+                    
+                        header.map((k, i) => {return  arr.indexOf(i)==-1 ? (cell={col:{name:"", disp:true}}, cell.col.name=k, col.push(cell)) : null})
+                        let h = header.map((k, i) => {return  (arr.indexOf(i)==-1 && props.columns[i] 
+                                                                && props.columns[i].col.disp == true) 
+                                                                ? (<th onClick={() => sortarr(k, i)}>{k}</th>) : null 
+                                        })
+ 
+                        col.shift(); 
+                        
+                        return (<tr>{h}</tr>)
+                    }
+                    const df = (i) => {
+                        data.df(i)
+                        setElement(1)
+                    }
+                    let url =""
+                    const buildRow = (row, i) =>{
+                        let tr = Object.keys(row).map((k, j) =>    { 
+                         return    typeof row[k] !== "object" && props.columns[j] && props.columns[j].col.disp==true  && j!=2
+                                                            ?  <td onMouseOver={() => {url="/a/"+row.id; setId(row.id);}} >{row[k]}</td> 
+                                                            :  typeof row[k] !== "object" && props.columns[j] && props.columns[j].col.disp==true 
+                                                               && j==2  ? <td onMouseOver={() => {url="/a/"+row.id; setId(row.id);}} ><Link  to={"/a/"+row.id} onMouseOver={() => {url="/a/"+row.id; setId(row.id); }} onclick={() => {url="/a/"+row.id;df(row.id)}} >edit</Link>..{row[k]}</td>  
+                                                                         : col[j].col.disp=false 
+                                                                       
+                                                                          })        
+                        return (<tr>{tr}</tr>);
+                    }
+                    
+
+
+                    const d = () => {ttt=1;; }
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+                    const sortarr = (k, i) => {
+                        setSort(!sort)
+                        let r = Object.keys(data[0]).filter((t) => data[0][t]) 
+                       sort ? (data.sort(function(a,b){ 
+                               return a[r[i]].localeCompare(b[r[i]]) ;
+                                    }) 
+                        )
+                        :
+                        (data.sort(function(a,b){ 
+
+                            return b[r[i]].localeCompare(a[r[i]]);
+                        }) 
+                        )
+                     
+                    }
+
+                    const ChangePage = (pageNumber) => {
+                        setNumber(pageNumber);
+                    };
+                    const deleteRec = (id) => {
+                        window.location.href=window.location.href.slice(0, window.location.href.length-2)
+                        props.deleteRec(id);
+                         
+                        
+                    }
+                    const setN = number => setNumber(number)
+
+                    const routeElement = (r) =>  {  
+                      
+                           return (<tr><td>ddddd</td></tr>);                            
+                                    }
+                    return (
+ 
+
+
+                    <div>
+ 
+                        {
+                            props.flagSettings ?
+                                            <button onClick={() => props.changeCol(props.flagSettings, col)}>urls</button>
+                                        : 
+                                        <button onClick={() => props.changeCol(props.flagSettings, col)}>settings</button>
+                            } 
+                            <div>
+                                { 
+                                        element == 1 ? <div>
+                                                            <Route path={"/a/"+id} component={() => <B data={data} id={id}/>} /> 
+                                                            <button onClick={() => setElement(2)}>update</button>
+                                                            <button onClick={() =>  deleteRec(id)}>delete</button>
+                                                        </div>
+                                                    : 
+                                                    
+                                                    <div> <table className="table table-striped">
+                                                            <thead >
+                                                                {data[0] ?  buildHeader(Object.keys(data[0]), data.columns) : null}
+                                                            </thead>
+                                                            <tbody>
+
+                                                                {
+                                                                    view==1 ?
+                                                                        currentPost.map(buildRow)
+                                                                :
+                                                                <tr><td>dddddddddddd</td></tr>
+                                                                
+                                                                }
+                                
+                                        
+
+
+
+
+
+                                                            </tbody>
+                                                        </table> 
+                                                        <Pagination number={number} pageNumber={pageNumber} ChangePage={ChangePage} setN={setN} />
+                                                        </div>
+                                
+                                    }
+                                    </div>
+
+                        </div>
+   
+                    )
+                }
+
+                const Record = () => {
+                    return (
+                        <div>aaaaaaaaaaaaaaaaaaaaaaaaaa     </div>
+                    )
+                }
+
+                const Pagination = props => {
+                    return ( 
+                        <div className="my-3 text-center">
+                                <button
+                                    className="px-3 py-1 m-1 text-center btn-primary"
+                                    onClick={() => props.setN(props.number - 1)}
+                                >
+                                Previous
+                                </button>
+
+                                {props.pageNumber.map((Elem, i) => {
+                                    return (
+                                        <div class="pagbtn">
+                                           {
+                                            props.number==i+1 ? 
+                                                <button
+                                                    className="px-3 py-1 m-1 text-center btn-outline-dark"
+                                                    onClick={() => props.ChangePage(Elem)}
+                                                > #
+                                                    
+                                                </button>
+                                                :
+                                                <button
+                                                    className="px-3 py-1 m-1 text-center btn-outline-dark"
+                                                    onClick={() => props.ChangePage(Elem)}
+                                                >
+                                                   {Elem}
+                                                </button>
+                                            }
+                                        </div>
+                                        );
+                                    })
+                                }
+                                <button
+                                    className="px-3 py-1 m-1 text-center btn-primary"
+                                    onClick={() => props.setN(props.number + 1)}
+                                >
+                                Next
+                                </button>
+                            </div>)
+                }
+
+
+                const B = (props) => {
+                    const buildRow = (row, i) =>{
+                        let tr = Object.keys(row).map((k, j) =>    { 
+                                                   return   i==props.id ? <div>{row[k]}</div> : null
+                                                                          })        
+                        return (<div>{tr}</div>);
+                    }
+                    return (<div> {props.data.map(buildRow)} aBaaaa {props.id}</div>)
+                }
+ 
+            ReactDOM.render(<App recits={recits}/>, document.querySelector("#app"))
+
+ 
+</script>
+<style>
+body {
+  background: white;
+  padding: 20px;
+  font-family: Helvetica;
+}
+.my-3{
+    display:flex;
+    flex-direction:row;
+}
+.a:link{
+    background-color: #fff;
+  color:red;
+}
+a:hover, a:focus {background-color: #333;
+  color: blue;
+  transition: all 0.5s ease-out;
+  }
+ 
+.container{
+ 
+    position:absolute;
+}
+.X1{
+    position:absolute;
+    left:130px;
+    top:-250px; 
+}
+.a1:hover ~ .X1{
+    position:absolute;
+    left:130px;
+    top:0px;   
+  transition: all 0.5s ease-out;
+}
+.X2{
+    position:absolute;
+    left:130px;
+    top:-250px; 
+}
+.a2:hover ~ .X2{
+    position:absolute;
+    left:130px;
+    top:0px; 
+  transition: all 0.5s ease-out;
+}
+.X3{
+    position:absolute;
+    left:130px;
+    top:-250px; 
+}
+.a3:hover ~ .X3{
+    position:absolute;
+    left:130px;
+    top:0px;   
+  transition: all 0.5s ease-out;
+}
+nav {
+  background-color:blue;
+  position:absolute;
+  top:0px;
+ 
+  display: flex;
+  flex-direction:row;
+  opacity:1;
+  width: auto;
+
+  height: auto;
+  
+}
+.view {
+    position:relative;
+    top:50px
+}
+.item img {width: 100%; height: auto}
+ 
+  
+
+</style>
+</body></html>
