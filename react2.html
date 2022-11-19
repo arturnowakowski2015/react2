@@ -62,7 +62,7 @@ const { PureComponent, useState, useEffect, } = React;
                             </nav>
 
                         </div>  
-                        <div class="view">  ....  <Route path={"/a/"+i} component={() => <B /> } /> .....      
+                        <div class="view">  ....       
                             {  
 
 
@@ -287,7 +287,9 @@ const { PureComponent, useState, useEffect, } = React;
                             strd:[],
                             flagsettings:false,
                             postPerPage:10,
+                            flag:0,
                             dff:-1,
+                            ending:"",
                             urls:[
                                 "https://jsonplaceholder.typicode.com/posts",
                                 "https://jsonplaceholder.typicode.com/comments",
@@ -343,20 +345,27 @@ const { PureComponent, useState, useEffect, } = React;
                         this.setState({postPerPage: value})
 
                     }
+                      end()
+                    {
+                        let end = 1
+                        this.setState({ending: this.state.dff==-1 ? 0 : end})
+      
+
+                    }
                     df(i){
-                        alert(i +"  przed  "+this.state.dff)
-                        this.setState({dff:i})
-                        alert(this.state.dff)
+ 
+                        this.setState({dff: i})
+                        this.setState({flag: 1})
+  
                     }
                     deleteRec(i){
-                        alert(this.state.data.length)
+ 
                         this.setState({data: this.state.data.filter((t) =>  (t.id)!=i), dff:i})
-                        alert("po   "+this.state.data.length)
-                    }
+                        window.location.href=window.location.href.slice(0,window.location.href.lastIndexOf("/")+1)+"pagination/0"
 
+                    }
+ 
                     render(){
-                        
-                     
                         return (
                             <div class="row" > 
                                 <div class="col-xs-12 col-md-6">
@@ -371,11 +380,18 @@ const { PureComponent, useState, useEffect, } = React;
                                             <Select  changeRecits={this.changeRecits.bind(this)} strd={this.state.strd } />
                                         }
                                         
-                                         <Table data={this.state.data} columns={this.state.columns}
+                                        <Route path={"/a/pagination/"+this.state.ending } component={() => <Table data={this.state.data} columns={this.state.columns}
                                                flagSettings={this.state.flagSettings} postPerPage={this.state.postPerPage} 
                                                changeCol={this.changeCol.bind(this)}  
-                                               link={this.props.link} df={() => this.df.bind(this)} dff={this.state.dff} 
-                                               deleteRec={ this.deleteRec.bind(this)} gotoLink={(i) => this.props.gotoLink(i)} />  
+                                               link={this.props.link} df={this.df.bind(this)} dff={this.state.dff} 
+                                               deleteRec={ this.deleteRec.bind(this)} gotoLink={(i) => this.props.gotoLink(i)} 
+                                               end={this.end.bind(this)} /> } /> 
+                                            { (this.state.flag==1 ) &&   <div>
+                                                            <Route path={"/a/"+this.state.dff ==0 ? this.state.ending : 0} component={() => <B data={this.state.data} id={this.state.dff}/>} /> 
+                                                            <button onClick={() => setElement(2)}>update</button>
+                                                            <button onClick={() => {alert(this.state.dff); this.setState({flag: 0});this.deleteRec(this.state.dff)}}>delete</button>
+                                                        </div>
+                                                    }
                                     </div>
                                 </div>
                             </div>
@@ -420,21 +436,23 @@ const { PureComponent, useState, useEffect, } = React;
                     const [id, setId ] = useState(0);
                     const [number, setNumber] = useState(1); // No of pages
                     const [element, setElement] = useState(3)
-
+                    const {data} = props;
                     const [postPerPage, setPostPerPage] = useState(props.postPerPage);
                     useEffect(() => {
                         setPostPerPage(props.postPerPage)
                     }, [props.postPerPage]); 
+ 
+ 
                     useEffect(() => {
  
-                        alert(element+"PPPP")
-                        if(window.location.href.slice(window.location.href.indexOf("#")+1)==url)
-                        setElement(1)
-                        else setElement(2);
-                   
-                    }, [url, df]); 
- 
-                    const {data} = props;
+                    let r = window.location.href.slice(window.location.href.lastIndexOf("/")+1);    
+            
+                    if(r.charAt(0)!=0)
+                    setNumber(r.charAt())
+             
+                    }, [setNumber]); 
+
+
                     let ttt=0;
               
                     const arr = [];
@@ -465,26 +483,28 @@ const { PureComponent, useState, useEffect, } = React;
                         return (<tr>{h}</tr>)
                     }
                     const df = (i) => {
-                        data.df(i)
+                        props.df(i)
                         setElement(1)
                     }
                     let url =""
                     const buildRow = (row, i) =>{
                         let tr = Object.keys(row).map((k, j) =>    { 
                          return    typeof row[k] !== "object" && props.columns[j] && props.columns[j].col.disp==true  && j!=2
-                                                            ?  <td onMouseOver={() => {url="/a/pagination/"+row.id+"/edit"; setId(row.id);}} >{row[k]}</td> 
+                                                            ?  <td onMouseOver={() => {url="/a/"+row.id; setId(row.id);}} >{row[k]}</td> 
                                                             :  typeof row[k] !== "object" && props.columns[j] && props.columns[j].col.disp==true 
-                                                               && j==2  ? <td onMouseOver={() => {url="/a/pagination/"+row.id+"/edit"; setId(row.id);}} ><Link  to={url="/a/pagination/"+row.id+"/edit"} onMouseOver={() => {url="/a/pagination/"+row.id+"/edit"; setId(row.id); }} onclick={() => {url="/a/pagination/"+row.id+"/edit";df(row.id)}} >edit</Link>..{row[k]}</td>  
+                                                               && j==2  ? <td onMouseOver={() => {url="/a/"+row.id; setId(row.id);}} >
+                                                                            <Link  to={"/a/"+row.id} onMouseOver={() => {url="/a/"+row.id; setId(row.id); }} 
+                                                                                    onClick={() => {  props.df(row.id)  }} >edit</Link>..{row[k]}</td>  
                                                                          : col[j].col.disp=false 
                                                                        
                                                                           })        
                         return (<tr>{tr}</tr>);
                     }
                     
-                    const setel = () => {alert(">>>");setElement(1);}
+
 
                     const d = () => {ttt=1;; }
-                               const sortarr = (k, i) => {
+                   const sortarr = (k, i) => {
                         setSort(!sort)
                         let r = Object.keys(data[0]).filter((t) => data[0][t]) 
                        sort ? (data.sort(function(a,b){ 
@@ -500,50 +520,36 @@ const { PureComponent, useState, useEffect, } = React;
                      
                     }
 
-                    const ChangePage = (pageNumber) => { 
-                        setNumber(pageNumber); 
-                        props.df(pageNumber); 
+                    const ChangePage = (pageNumber) => {
+                        setNumber(pageNumber);
+                        alert(number+"          pop   "+ pageNumber)
                     };
-                    const deleteRec = (id) => {
-                        window.location.href=window.location.href.slice(0, window.location.href.length-2)
-                        props.deleteRec(id);
-                         
-                        
+                    const end = (props) => {
+                        props.end()
                     }
+
                     const setN = number => setNumber(number)
 
-                    const routeElement = (r) =>  {                       
+                    const routeElement = (r) =>  {  
+                      
                            return (<tr><td>ddddd</td></tr>);                            
-                    }
-                    let url1 = window.location.href.slice(window.location.href.lastIndexOf("/"), window.location.href.length);
-               
- 
- 
-               if(url1.charAt(1)!=0)
-               setElement(1);
- 
+                                    }
                     return (
  
 
 
                     <div>
-                        <Route exact path={"/a/pagination/"+ (props.dff==-1 ?  url1.charAt(1)==0 ? 0 : url1.charAt(1)  : url1.charAt(1) ) } 
-                        component={() => <div><Pagination number={number} pageNumber={pageNumber} 
-                                                     ChangePage={ChangePage} setN={setN} dff={props.dff} setel={setel}/>                                            <button onClick={() => props.changeCol(props.flagSettings, col)}>urls</button>
-            
-                                        <button onClick={() => props.changeCol(props.flagSettings, col)}>settings</button></div>
-                                                    } />
-                        {
-          
+                        <Pagination number={number} pageNumber={pageNumber} ChangePage={ChangePage} setN={setN} end={end}/>
 
+                        {
+                            props.flagSettings ?
+                                            <button onClick={() => props.changeCol(props.flagSettings, col)}>urls</button>
+                                        : 
+                                        <button onClick={() => props.changeCol(props.flagSettings, col)}>settings</button>
                             } 
                             <div>
                                 { 
-                                        element == 1 ? <div>
-                                                            <Route path={"/a/pagination/"+id+"/edit"} component={() => <B />} /> 
-                                                            <button onClick={() => setElement(2)}>update</button>
-                                                            <button onClick={() =>  deleteRec(id)}>delete</button>
-                                                        </div>
+                                        element == 1 ? null
                                                     : 
                                                     
                                                     <div> <table className="table table-striped">
@@ -585,22 +591,17 @@ const { PureComponent, useState, useEffect, } = React;
                 }
 
                 const Pagination = props => {
-                    const [t, setT]  =useState(0);
+                    const[el, setEl] =useState(0)
                     let url=""
-                    let r=""
-                    useEffect(() => { 
-                    r=window.location.href.slice(window.location.href.lastIndexOf("/")+1) 
-                    if(r!=0){
-                        props.ChangePage(r)
-                       
-                    }
-                    }, [setT]);
-   
-
+                    let ul ="";
+                    useEffect(() => {
+                        ul = window.location.href.slice(window.location.href.lastIndexOf("/"), window.location.length+1)
+                         if(url!=""){alert( ":"+ul);
+                        props.ChangePage(ul)
+                        props.end()
+                        }
+                    }, [props.ChangePage])
                     return ( 
-
- 
-
                         <div className="my-3 text-center">
                                 <button
                                     className="px-3 py-1 m-1 text-center btn-primary"
@@ -616,19 +617,16 @@ const { PureComponent, useState, useEffect, } = React;
                                             props.number==i+1 ? 
                                                 <button
                                                     className="px-3 py-1 m-1 text-center btn-outline-dark"
-                                                    onClick={() => {url="p";;props.ChangePage(Elem)}}
-                                                ><Link to={"/a/pagination/"+Elem} onClick={() =>{url="p";  props.ChangePage(props.number+1)}}
-                                                    className="px-3 py-1 m-1 text-center btn-outline-dark"
-                                                   
+                                                    onClick={() => props.ChangePage(Elem)}
                                                 > #
                                                     
-                                            </Link></button>
+                                                </button>
                                                 :
-                                                <button ><Link to={"/a/pagination/"+Elem} onClick={() => {url="hhh"; setT(props.number+1)}}
+                                                <button><Link to={"/a/pagination/"+Elem} onClick={() => {url="rr";props.ChangePage(Elem)}}
                                                     className="px-3 py-1 m-1 text-center btn-outline-dark"
                                                    
                                                 >
-                                                   {Elem }
+                                                   {Elem}
                                                 </Link></button>
                                             }
                                         </div>
@@ -641,15 +639,18 @@ const { PureComponent, useState, useEffect, } = React;
                                 >
                                 Next
                                 </button>
-                            </div>
-
-                            )
+                            </div>)
                 }
 
 
-                const B = () => {
-                     
-                    return (<div>vvvvvvvvvvvvvvvvvvvvvvvvvvvv</div>)
+                const B = (props) => {
+                    const buildRow = (row, i) =>{
+                        let tr = Object.keys(row).map((k, j) =>    { 
+                                                   return   i==props.id ? <div>{row[k]}</div> : null
+                                                                          })        
+                        return (<div>{tr}</div>);
+                    }
+                    return (<div> {props.data.map(buildRow)} aBaaaa {props.id}</div>)
                 }
  
             ReactDOM.render(<App recits={recits}/>, document.querySelector("#app"))
