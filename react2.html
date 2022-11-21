@@ -14,10 +14,23 @@
 
     </div>
     <script type="text/babel">
-  
 let recits = 
 [{"operation":"adding","items":[{"name":"Use hooks!","id":0.6775456512483691,"isActive":false,"display":"block"}],"id":0,"indexnow":0},
 {"operation":"editing","items":[{"name":"XXXXXXXX","id":0.6775456512483691,"isActive":false,"display":"block"}],"id":0,"indexnow":0}];
+
+let tree = {
+  title: "howdy",
+  childNodes: [
+    {title: "bobby"},
+    {title: "suzie", childNodes: [
+      {title: "puppy", childNodes: [
+        {title: "dog house"}
+      ]},
+      {title: "cherry tree"}
+    ]}
+  ]
+};
+
 
 let index=0;
 
@@ -50,6 +63,7 @@ const { PureComponent, useState, useEffect, } = React;
 
 
                         <div class="container">
+
             
                             <nav>
                             <Link class="a1" onClick={() => setView(1)} to="/">TODO</Link>
@@ -62,11 +76,11 @@ const { PureComponent, useState, useEffect, } = React;
                             </nav>
 
                         </div>  
-                        <div class="view">  ....       
+                        <div class="view">  ....  
                             {  
 
 
-                                view==1 ? ( <Route exact path="/" component={() => <Home recits={props.recits} />} /> )
+                                view==1 ? ( <Route  path="/" component={() => <Home recits={props.recits} />} /> )
                                         : view==2 ?
                                          
                                         <Route path="/a" component={() => <A  gotoLink={(i) => {setI(i);setView(4); gotoLink(i)}} /> } >
@@ -85,6 +99,84 @@ const { PureComponent, useState, useEffect, } = React;
                     </div>
                 );
                 }
+
+                class TreeNode extends React.Component {
+                    constructor(props) {
+                        super(props);
+                        this.state = {
+                            v:0,
+                            visible: true,
+                        };
+                    };
+                     c =0;
+                    toggle = () => {
+                        this.setState({visible: !this.state.visible});
+                    };
+                    
+                    makeids = (nodes, i, tt) => {
+                            nodes && nodes.map((t)=>{
+                                if(t.depth==i){ 
+                                    t.id=this.c++
+                                }
+                                if(t.childNodes){this.makeids(t.childNodes, i, tt);}
+                            })
+                        };
+                    
+                    makeidlev = (nodes, i, tt) => {
+                            nodes && nodes.forEach((t) => {alert(tt)
+                                t.depth=tt;
+                                if(t.childNodes){this.makeidlev(t.childNodes, 0, ++tt);--tt}
+                            });
+                            for(let i=0; i<20; i++){
+                                this.c=0;
+                                this.makeids(nodes, i, 0);
+                            }
+                        };
+
+
+
+
+                    render() {
+                        
+                        let childNodes;
+                        let className;
+                        let v=0;
+                        if (this.props.node.childNodes != null) {
+                        childNodes = this.props.node.childNodes.map(function(node, index) {
+                            return <li key={index}><TreeNode node={node} /></li>
+                        });
+
+                                className = 'togglable';
+                        if (this.state.visible) {
+                            className += ' togglable-down';
+                        } else {
+                            className += ' togglable-up';
+                        }
+                        }
+
+                        var style;
+                        if (!this.state.visible) {
+                        style = {display: "none"};
+                        }
+
+
+
+                        this.makeidlev(this.props.node.childNodes, 0, 0);
+                        let str = JSON.stringify(this.props.node); 
+                        console.log(str);
+                        return (
+                        <div class="TreeNode">
+                            <h5 onClick={this.makeidlev} className={className}>
+                            {this.props.node.title}
+                            </h5>
+                            <ul style={style}>
+                            {childNodes}
+                            </ul>
+                        </div>
+                        );
+                    }
+                    }
+
 
  
             const Home = props => {     
@@ -160,7 +252,8 @@ const { PureComponent, useState, useEffect, } = React;
                 }
 
                 return ( 
-                    <div>    
+                    <div>                                
+
                             <Add todos={todos} index={index} changeind={changeind} add={add} />
                             <Select  
                                     changeRecits={changeRecits} 
@@ -285,11 +378,12 @@ const { PureComponent, useState, useEffect, } = React;
                             data: [],
                             columns:[ ],
                             strd:[],
-                            flagsettings:false,
+                            flagsettings:0,
                             postPerPage:10,
                             flag:0,
                             dff:-1,
                             ending:"",
+                            str:"",
                             urls:[
                                 "https://jsonplaceholder.typicode.com/posts",
                                 "https://jsonplaceholder.typicode.com/comments",
@@ -308,27 +402,41 @@ const { PureComponent, useState, useEffect, } = React;
                             // set the state
                             console.log(response);
                             this.setState({ data: response });
+
+
                             this.setState({ columns: Object.keys(this.state.data[0]).map((t) => {
-                                                     let d={col:{name:"", disp:true}};
-                                                     d.col.name=null;
+                                                 
+                                                                 let d={col:{name:"", disp:true}};
+                                                                 d.col.name=null;
+
                                                      return d;
-                            })}) 
+                                                
+                                } 
+                                 
+                                 )
+                            }) 
                         });
- 
+                        
+                        
+   
+
+
                     }
                     changeRecits(e) {   
                         this.setState({i: e}) 
                         this.furl();
                     } 
                     changeCol(fs, cols){
-                      this.setState({flagSettings : !fs, 
+                      this.setState({flagsettings : fs, 
                                      columns: cols });
 
                     }
                     componentDidMount() {
                         this.furl();
                         this.setState({strd: this.state.urls.map((t, i) => (
-                                                <option  value={i}>{t.slice(t.lastIndexOf("/"))}</option>
+ 
+
+                                              (  <option  value={i}>{t.slice(t.lastIndexOf("/"))}</option> )  
                                           )),
                                        
                         });
@@ -358,40 +466,109 @@ const { PureComponent, useState, useEffect, } = React;
                         this.setState({flag: 1})
   
                     }
-                    deleteRec(i){
+                    deleteRec(i,  flag){
+                        if(flag=1){
+                            this.setState({data: this.state.data.filter((t) =>  (t.id)!=i), dff:i})
+                            window.location.href=window.location.href.slice(0,window.location.href.lastIndexOf("/")+1)+"pagination/0/delete"
  
-                        this.setState({data: this.state.data.filter((t) =>  (t.id)!=i), dff:i})
-                        window.location.href=window.location.href.slice(0,window.location.href.lastIndexOf("/")+1)+"pagination/0"
+                        }else if(flag==2){
+                            window.location.href=window.location.href.slice(0,window.location.href.lastIndexOf("/")+1)+"update"
+ 
+                        }
+                        //"/a/"+this.state.dff+"/delete"
 
                     }
+                    setStr(str){     
+                            let data = this.state.data.slice()
+                             data.map((t) => {
+                                    return  t.id==3 ? t.title=str : t.title = t.title
+                                })
+                        this.setState({data:  data }) 
+                 
+                
+                       window.location.href= window.location.href.slice(0,window.location.href.lastIndexOf("/")-1)+"pagination/0";
+                    
+                  //  window.location.href=window.location.href.slice(0,window.location.href.lastIndexOf("/")-1)+"pagination/0"
+                    }
+                    setUrl(){
+                        window.location.href= window.location.href.slice(0,window.location.href.lastIndexOf("/pag")+1)+"delete"
  
+
+                        this.setState({flagsettings:4})
+                    }
                     render(){
+
+
+
+
+
+
                         return (
                             <div class="row" > 
                                 <div class="col-xs-12 col-md-6">
                                     <div id="container" >
+                                        <TreeNode node={tree} />
                                         {
-                                             
-                                            this.state.flagSettings // Logs output to dev tools console.)
-                                            ?
+                                           
+                                            this.state.flagsettings == 4 &&  (  
+                                            <div>
+                                                     <pre>this will be deleted                                                             <button>confirm</button></pre>
+                                                <Table data={this.state.data.filter((t) => t.checkbox==true)} columns={this.state.columns}
+                                                    flagsettings={this.state.flagsettings} postPerPage={this.state.postPerPage} 
+                                                    changeCol={this.changeCol.bind(this)}  
+                                                    link={this.props.link} df={this.df.bind(this)} dff={this.state.dff} 
+                                                    deleteRec={ this.deleteRec.bind(this)} gotoLink={(i) => this.props.gotoLink(i)} 
+                                                    end={this.end.bind(this)} />
+                                            </div>)
+                                        }
+                                        <div>
+                                        {
+                                           
+                                            this.state.flagsettings==3 &&  this.state.flag!=1 && this.state.flags!=3  // Logs output to dev tools console.)
+                                            ?   <div class="my-3">    
                                              <Settings data={this.state.data} columns={this.state.columns} changePPP={this.changePPP.bind(this)} 
                                                        checkedCol={this.checkedCol.bind(this)} />
+                                                       
+                                                                                <div><button
+                                                                                     onClick={() => this.setUrl()}>delete_checked<input type="checkbox" checked /></button></div>
+                                                                                <div><button>put_checked<input type="checkbox" checked /></button></div>
+                                                                                <div><pre>                            elements: {this.state.data.length}  </pre></div>
+
+                                                                                <div>
+                                            
+                                                    <button onClick={() =>{
+                                                        window.location.href=   window.location.href.slice(0, window.location.href.lastIndexOf("/"))+(this.state.dff==-1 ? "/"+0 : "/"+this.state.dff);
+                                                        this.changeCol(0, this.state.columns)}} >url</button>
+                                            </div>
+
+                                                                            </div>  
                                             :
-                                            <Select  changeRecits={this.changeRecits.bind(this)} strd={this.state.strd } />
+                                            this.state.flagsettings ==2 && this.state.flag!=1  && this.state.flags!=3 && <Select  changeRecits={this.changeRecits.bind(this)} strd={this.state.strd } />
                                         }
                                         
                                         <Route path={"/a/pagination/"+this.state.ending } component={() => <Table data={this.state.data} columns={this.state.columns}
-                                               flagSettings={this.state.flagSettings} postPerPage={this.state.postPerPage} 
+                                               flagsettings={this.state.flagsettings} postPerPage={this.state.postPerPage} 
                                                changeCol={this.changeCol.bind(this)}  
                                                link={this.props.link} df={this.df.bind(this)} dff={this.state.dff} 
                                                deleteRec={ this.deleteRec.bind(this)} gotoLink={(i) => this.props.gotoLink(i)} 
                                                end={this.end.bind(this)} /> } /> 
                                             { (this.state.flag==1 ) &&   <div>
                                                             <Route path={"/a/"+this.state.dff ==0 ? this.state.ending : 0} component={() => <B data={this.state.data} id={this.state.dff}/>} /> 
-                                                            <button onClick={() => setElement(2)}>update</button>
-                                                            <button onClick={() => {alert(this.state.dff); this.setState({flag: 0});this.deleteRec(this.state.dff)}}>delete</button>
+                                                                <Link to={"/a/"+this.state.dff+"/update"} onClick={() => { this.setState({flag: 3});}}>update</Link>
+                                                  
+                                                            <Link to={"/a/"+this.state.dff+"/delete"} onClick={() => { this.setState({flag: 2});this.deleteRec(this.state.dff, 1)}}>delete</Link>
+                                                             
                                                         </div>
                                                     }
+                                            {this.state.flag==2 &&
+                                                <Route path={"/a/"+this.state.dff+"/delete" } component={() => <Delete />} />
+                                            }
+                                            {this.state.flag==3 && 
+                                                <Route path={"/a/"+this.state.dff+"/update" } component={() => <Update    data={this.state.data} id={this.state.dff} setStr={ this.setStr.bind(this)} />} />
+                                            }
+                                            </div>
+
+
                                     </div>
                                 </div>
                             </div>
@@ -431,27 +608,33 @@ const { PureComponent, useState, useEffect, } = React;
                 }
 
                 const Table = (props, columns) => {
+                    const [end1, setEnd1] =useState(0)
                     const [sort, setSort] = useState(true)
                     const [view, setView] = useState(1)
                     const [id, setId ] = useState(0);
                     const [number, setNumber] = useState(1); // No of pages
                     const [element, setElement] = useState(3)
+                    const[start, setStart]=useState(new Date().getTime())
                     const {data} = props;
                     const [postPerPage, setPostPerPage] = useState(props.postPerPage);
                     useEffect(() => {
                         setPostPerPage(props.postPerPage)
                     }, [props.postPerPage]); 
  
- 
+                    let r="";
                     useEffect(() => {
- 
-                    let r = window.location.href.slice(window.location.href.lastIndexOf("/")+1);    
-            
-                    if(r.charAt(0)!=0)
-                    setNumber(r.charAt())
+    
+                        let r = window.location.href.slice(window.location.href.lastIndexOf("/")+1);    
+    
+                        if(r.charAt(0)!=0 && r!="p" && typeof r.charAt(0) != "string"){  
+                        setNumber(r.charAt(0))
+                        r="";
+                        }
              
                     }, [setNumber]); 
+   
 
+ 
 
                     let ttt=0;
               
@@ -486,18 +669,38 @@ const { PureComponent, useState, useEffect, } = React;
                         props.df(i)
                         setElement(1)
                     }
-                    let url =""
+                    let url ="" ;
+
+                    const loop = () => {
+                        for (let i = 0; i < 1111100; i++) {
+                            Math.sqrt(i);
+                        }
+                    }
+
                     const buildRow = (row, i) =>{
+                        let m=0;
                         let tr = Object.keys(row).map((k, j) =>    { 
                          return    typeof row[k] !== "object" && props.columns[j] && props.columns[j].col.disp==true  && j!=2
                                                             ?  <td onMouseOver={() => {url="/a/"+row.id; setId(row.id);}} >{row[k]}</td> 
                                                             :  typeof row[k] !== "object" && props.columns[j] && props.columns[j].col.disp==true 
-                                                               && j==2  ? <td onMouseOver={() => {url="/a/"+row.id; setId(row.id);}} >
+                                                               && j==2  ? 
+                                               
+ 
+                                                               <td onMouseOver={() => {url="/a/"+row.id; setId(row.id);}} >
                                                                             <Link  to={"/a/"+row.id} onMouseOver={() => {url="/a/"+row.id; setId(row.id); }} 
-                                                                                    onClick={() => {  props.df(row.id)  }} >edit</Link>..{row[k]}</td>  
+                                                                                    onClick={() => {  props.df(row.id)  }} >edit</Link>..
+                                                                                    {row[k]+ ( loop()) +":" + ":"+
+                                                                     (start/1000+0.007 > parseFloat((start/1000)+(0.001*parseInt(row.id))) ?
+                                                                        row.checkbox=true :  row.checkbox=false )} . 
+                                                                        {row.checkbox==true ? <input type="checkbox" checked /> :<input type="checkbox" />}</td>  
+
+                                                
+
+
                                                                          : col[j].col.disp=false 
                                                                        
                                                                           })        
+                     
                         return (<tr>{tr}</tr>);
                     }
                     
@@ -522,63 +725,80 @@ const { PureComponent, useState, useEffect, } = React;
 
                     const ChangePage = (pageNumber) => {
                         setNumber(pageNumber);
-                        alert(number+"          pop   "+ pageNumber)
+                     
                     };
                     const end = (props) => {
                         props.end()
                     }
+  
+                    const setN = number => {
+                            r="p"
+                            setNumber(number)
+                    }
 
-                    const setN = number => setNumber(number)
-
-                    const routeElement = (r) =>  {  
-                      
+                    const routeElement = (r) =>  {                       
                            return (<tr><td>ddddd</td></tr>);                            
-                                    }
+                    }
+                    let flagel=true;
+                    alert(props.flagsettings+"  :  ")
+                    const el = <div> 
+                      {  props.flagsettings!=4 && <Pagination number={number} pageNumber={pageNumber} ChangePage={ChangePage} setN={setN} end={end}/>      }                                     
+                                            <div>
+                                                { 
+                                                        element == 1 ? null
+                                                                    : 
+                                                                                      
+                                                                    <div> <table className="table table-striped">
+
+                                                                            <thead >
+                                                                                {data[0] ?  buildHeader(Object.keys(data[0]), data.columns) : null}
+                                                                            </thead>
+                                                                            <tbody>
+
+                                                                                {
+                                                                                    view==1 ?
+                                                                                       currentPost.length>0 ? currentPost.map(buildRow) : <div>vvvv</div>
+                                                                                :
+                                                                                <tr><td>dddddddddddd</td></tr>
+                                                                                
+                                                                                }
+                                                
+                                                        
+
+
+
+
+
+                                                                            </tbody>
+                                                                        </table> 
+                                                                        </div>
+                                                
+                                                    }
+                                                    </div>
+                                                    </div>
                     return (
- 
 
 
-                    <div>
-                        <Pagination number={number} pageNumber={pageNumber} ChangePage={ChangePage} setN={setN} end={end}/>
 
-                        {
-                            props.flagSettings ?
-                                            <button onClick={() => props.changeCol(props.flagSettings, col)}>urls</button>
-                                        : 
-                                        <button onClick={() => props.changeCol(props.flagSettings, col)}>settings</button>
+                    <div>                      {
+                            props.flagsettings==0 ? ( 
+                                            <div>
+                                                <Route exact path={"/a/pagination/"+id+"/settings"} component={() =>  {<div>mmmmm</div>}}  />
+                                                    <button onClick={() =>{ 
+                                                        window.location.href=   window.location.href.slice(0, window.location.href.lastIndexOf("/"));
+                                                        props.changeCol(2, col)}} >url</button>
+                                            </div> )
+                                        :  props.flagsettings==2 ?
+                                        <div><button onClick={() => {flagel=!flagel;  
+                                            window.location.href+="/settings";  
+                                                props.changeCol(3, col)
+                                        }}>settings</button>
+                                </div>
+                                : null
                             } 
-                            <div>
-                                { 
-                                        element == 1 ? null
-                                                    : 
-                                                    
-                                                    <div> <table className="table table-striped">
-                                                            <thead >
-                                                                {data[0] ?  buildHeader(Object.keys(data[0]), data.columns) : null}
-                                                            </thead>
-                                                            <tbody>
-
-                                                                {
-                                                                    view==1 ?
-                                                                        currentPost.map(buildRow)
-                                                                :
-                                                                <tr><td>dddddddddddd</td></tr>
-                                                                
-                                                                }
-                                
-                                        
-
-
-
-
-
-                                                            </tbody>
-                                                        </table> 
-                                                        </div>
-                                
-                                    }
-                                    </div>
-
+                       {flagel  ? 
+                          el
+                        :       3 }
                         </div>
    
                     )
@@ -592,15 +812,16 @@ const { PureComponent, useState, useEffect, } = React;
 
                 const Pagination = props => {
                     const[el, setEl] =useState(0)
+                    
                     let url=""
                     let ul ="";
-                    useEffect(() => {
+                    const funk = (i) => {alert(i)
                         ul = window.location.href.slice(window.location.href.lastIndexOf("/"), window.location.length+1)
-                         if(url!=""){alert( ":"+ul);
-                        props.ChangePage(ul)
+                      
+                        props.ChangePage(i)
                         props.end()
-                        }
-                    }, [props.ChangePage])
+                  
+                    }
                     return ( 
                         <div className="my-3 text-center">
                                 <button
@@ -612,22 +833,24 @@ const { PureComponent, useState, useEffect, } = React;
 
                                 {props.pageNumber.map((Elem, i) => {
                                     return (
-                                        <div class="pagbtn">
+                                        <div class="pagbtn" >
                                            {
                                             props.number==i+1 ? 
-                                                <button
-                                                    className="px-3 py-1 m-1 text-center btn-outline-dark"
-                                                    onClick={() => props.ChangePage(Elem)}
-                                                > #
-                                                    
-                                                </button>
+                                            <div><Link to={"/a/pagination/"+Elem} onClick={funk}
+                                               
+                                                   
+                                                >
+                                                  #
+                                                </Link>
+                                                </div> 
                                                 :
-                                                <button><Link to={"/a/pagination/"+Elem} onClick={() => {url="rr";props.ChangePage(Elem)}}
-                                                    className="px-3 py-1 m-1 text-center btn-outline-dark"
+                                                 <div><Link to={"/a/pagination/"+Elem} onClick={() => funk(Elem)}
+                                                   
                                                    
                                                 >
                                                    {Elem}
-                                                </Link></button>
+                                                </Link> 
+                                                </div>
                                             }
                                         </div>
                                         );
@@ -644,6 +867,7 @@ const { PureComponent, useState, useEffect, } = React;
 
 
                 const B = (props) => {
+  
                     const buildRow = (row, i) =>{
                         let tr = Object.keys(row).map((k, j) =>    { 
                                                    return   i==props.id ? <div>{row[k]}</div> : null
@@ -653,6 +877,29 @@ const { PureComponent, useState, useEffect, } = React;
                     return (<div> {props.data.map(buildRow)} aBaaaa {props.id}</div>)
                 }
  
+                const Update = (props) => { 
+                        const [str, setStr] = useState("dddd" )   
+                     const confirm = () =>{ 
+                        
+                        props.setStr(str);
+
+                     }
+ 
+
+                    return <div> update<input type="text" value={str} 
+                        onChange={() => setStr(event.target.value)} /><button onClick={() => confirm()}>confirm</button></div>
+                }
+
+                class Delete extends React.Component {
+                    componentDidMount() {
+                        window.location.href=window.location.href.slice(0,window.location.href.lastIndexOf("/")-1)+"pagination/0"
+ 
+                    };
+                    render() {
+                        return <div> deleted!! </div>
+                    }
+                }
+                
             ReactDOM.render(<App recits={recits}/>, document.querySelector("#app"))
 
  
@@ -675,9 +922,16 @@ a:hover, a:focus {background-color: #333;
   color: blue;
   transition: all 0.5s ease-out;
   }
- 
+ .pagbtn div{
+    margin: 5px;
+ }
+ #container{
+    display:flex;
+    flex-direction:row;
+ }
+.TreeNode {width:200px;}
 .container{
- 
+
     position:absolute;
 }
 .X1{
